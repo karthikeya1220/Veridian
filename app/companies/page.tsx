@@ -5,16 +5,18 @@ import { useStore } from "@/lib/store";
 import { FilterBar } from "@/components/filter-bar";
 import { CompanyTable, SortKey } from "@/components/company-table";
 import { Pagination } from "@/components/pagination";
+import { SaveSearchDialog } from "@/components/save-search-dialog";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
 
 const PAGE_SIZE = 10;
 
 export default function CompaniesPage() {
-  const { companies, filters, saveSearch } = useStore();
+  const { companies, filters } = useStore();
   const [sortKey, setSortKey] = useState<SortKey>("thesisScore");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
 
   // Filter companies based on search filters
   const filtered = useMemo(() => {
@@ -136,11 +138,7 @@ export default function CompaniesPage() {
 
   // Handle save search
   const handleSaveSearch = () => {
-    const name = window.prompt("Save this search as:");
-    if (name) {
-      saveSearch(name, filters);
-      console.log(`Saved search: "${name}"`);
-    }
+    setSaveDialogOpen(true);
   };
 
   // Check if any filters are active
@@ -198,6 +196,13 @@ export default function CompaniesPage() {
           />
         </div>
       </div>
+
+      {/* Save Search Dialog */}
+      <SaveSearchDialog
+        open={saveDialogOpen}
+        onOpenChange={setSaveDialogOpen}
+        filters={filters}
+      />
     </div>
   );
 }
