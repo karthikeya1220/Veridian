@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-// @ts-expect-error TS7016: Could not find a declaration file for module './globals.css'.
 import "./globals.css";
 import { Sidebar } from "@/components/sidebar";
 import { GlobalSearch } from "@/components/global-search";
