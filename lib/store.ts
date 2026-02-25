@@ -73,7 +73,7 @@ export const useStore = create<VCStore>()(
       // Filter actions
       setFilter: (key, value) =>
         set((state) => {
-          state.filters[key] = value;
+          (state.filters as Record<keyof SearchFilters, string | number | string[]>)[key] = value;
         }),
 
       resetFilters: () =>
