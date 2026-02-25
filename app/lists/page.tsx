@@ -21,6 +21,8 @@ import {
   Building2,
   ListFilter,
   X,
+  ChevronDown,
+  Check,
 } from "lucide-react";
 import {
   exportToCSV,
@@ -36,6 +38,7 @@ export default function ListsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeListId, setActiveListId] = useState<string | null>(null);
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
+  const [copiedListId, setCopiedListId] = useState<string | null>(null);
 
   // Get companies for a specific list
   const getCompaniesForList = (listId: string) => {
@@ -59,16 +62,23 @@ export default function ListsPage() {
     const cos = getCompaniesForList(listId);
     if (cos.length > 0) {
       exportToCSV(cos, `vc-scout-list-${listId}.csv`);
+      setCopiedListId(listId);
+      setTimeout(() => setCopiedListId(null), 2000);
     }
   };
 
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-6 py-4 bg-white border-b border-gray-100 flex items-center justify-between">
+      <div className="px-6 py-4 bg-white border-b border-gray-100 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-2">
-          <h1 className="text-lg font-semibold text-gray-900">Lists</h1>
-          <span className="text-sm text-gray-400">{lists.length} lists</span>
+          <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+            <ListFilter size={16} className="text-blue-600" />
+          </div>
+          <div>
+            <h1 className="text-lg font-semibold text-gray-900">Lists</h1>
+            <p className="text-xs text-gray-400">{lists.length} {lists.length === 1 ? "list" : "lists"} created</p>
+          </div>
         </div>
 
         {/* Create List Dialog */}
@@ -76,9 +86,9 @@ export default function ListsPage() {
           <DialogTrigger asChild>
             <Button
               size="sm"
-              className="bg-blue-600 hover:bg-blue-700 text-white gap-1"
+              className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5 shadow-sm hover:shadow-md transition-all duration-200"
             >
-              <Plus size={14} />
+              <Plus size={16} />
               New List
             </Button>
           </DialogTrigger>
@@ -95,6 +105,7 @@ export default function ListsPage() {
                   e.key === "Enter" && handleCreateList()
                 }
                 autoFocus
+                className="focus:ring-blue-500"
               />
               <Button
                 onClick={handleCreateList}
@@ -112,31 +123,38 @@ export default function ListsPage() {
       <div className="flex-1 overflow-auto p-6">
         {/* Empty State */}
         {lists.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24">
-            <ListFilter size={40} className="text-gray-200 mb-4" />
-            <p className="text-lg font-medium text-gray-400">No lists yet</p>
-            <p className="text-sm text-gray-300 mt-1">
-              Create a list to organize companies you&apos;re tracking.
+          <div className="flex flex-col items-center justify-center py-24 animate-in fade-in duration-300">
+            <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-4">
+              <ListFilter size={32} className="text-blue-200" />
+            </div>
+            <p className="text-lg font-semibold text-gray-900">No lists yet</p>
+            <p className="text-sm text-gray-500 mt-1 max-w-sm text-center">
+              Create a list to organize companies you&apos;re tracking by theme, fund, or investment thesis.
             </p>
             <Button
               onClick={() => setDialogOpen(true)}
-              className="mt-4 bg-blue-600 hover:bg-blue-700 text-white gap-1"
+              className="mt-6 bg-blue-600 hover:bg-blue-700 text-white gap-1.5 shadow-md hover:shadow-lg transition-all duration-200"
             >
-              <Plus size={14} />
+              <Plus size={16} />
               Create your first list
             </Button>
           </div>
         ) : (
           // Lists Grid
-          <div className="grid grid-cols-1 gap-4 max-w-4xl">
-            {lists.map((list) => {
+          <div className="grid grid-cols-1 gap-3 max-w-4xl">
+            {lists.map((list, index) => {
               const companiesInList = getCompaniesForList(list.id);
               const isExpanded = activeListId === list.id;
+              const isExported = copiedListId === list.id;
 
               return (
                 <Card
                   key={list.id}
-                  className="border-gray-100 overflow-hidden cursor-pointer hover:shadow-sm transition-shadow"
+                  className={cn(
+                    "border-gray-100 overflow-hidden cursor-pointer transition-all duration-300 ease-out hover:shadow-md hover:border-blue-100 animate-in fade-in slide-in-from-bottom-2",
+                    isExpanded && "ring-1 ring-blue-200 shadow-lg"
+                  )}
+                  style={{ animationDelay: `${index * 50}ms` }}
                   onClick={() =>
                     setActiveListId(isExpanded ? null : list.id)
                   }
@@ -146,76 +164,92 @@ export default function ListsPage() {
                     <div className="flex items-center justify-between">
                       {/* Left side */}
                       <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-                          <ListFilter size={14} className="text-blue-600" />
+                        <div className={cn(
+                          "w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0 transition-all duration-300",
+                          isExpanded && "bg-blue-100 scale-110"
+                        )}>
+                          <ListFilter size={16} className={cn(
+                            "text-blue-600 transition-transform duration-300",
+                            isExpanded && "rotate-180"
+                          )} />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="font-medium text-gray-900 text-sm">
+                          <p className="font-semibold text-gray-900 text-sm group-hover:text-blue-600 transition-colors">
                             {list.name}
                           </p>
-                          <p className="text-xs text-gray-400 mt-0.5">
-                            {list.companyIds.length} companies · Created{" "}
-                            {formatDate(list.createdAt)}
+                          <p className="text-xs text-gray-500 mt-0.5">
+                            {companiesInList.length} {companiesInList.length === 1 ? "company" : "companies"} • Created {formatDate(list.createdAt)}
                           </p>
                         </div>
                       </div>
 
                       {/* Right side */}
                       <div className="flex items-center gap-2 shrink-0 ml-4">
-                        <Badge variant="secondary">
-                          {list.companyIds.length}
+                        <Badge variant="secondary" className="bg-gray-50 text-gray-700 font-medium">
+                          {companiesInList.length}
                         </Badge>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="w-7 h-7"
+                          className="w-8 h-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleExport(list.id);
                           }}
+                          title={isExported ? "Downloaded!" : "Download as CSV"}
                         >
-                          <Download size={12} />
+                          {isExported ? <Check size={14} /> : <Download size={14} />}
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="w-7 h-7 text-gray-300 hover:text-red-500"
+                          className="w-8 h-8 text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors duration-200"
                           onClick={(e) => {
                             e.stopPropagation();
                             deleteList(list.id);
                             if (isExpanded) setActiveListId(null);
                           }}
+                          title="Delete list"
                         >
-                          <Trash2 size={12} />
+                          <Trash2 size={14} />
                         </Button>
+                        <ChevronDown size={16} className={cn(
+                          "text-gray-400 transition-transform duration-300 ml-1",
+                          isExpanded && "rotate-180"
+                        )} />
                       </div>
                     </div>
                   </CardHeader>
 
                   {/* Expanded Content */}
                   {isExpanded && (
-                    <CardContent className="border-t border-gray-50 pt-3">
+                    <CardContent className="border-t border-gray-100 pt-4 animate-in fade-in slide-in-from-top-2 duration-300">
                       {companiesInList.length === 0 ? (
-                        <div className="text-center py-4">
-                          <p className="text-sm text-gray-400">
+                        <div className="text-center py-8">
+                          <Building2 size={24} className="text-gray-200 mx-auto mb-2" />
+                          <p className="text-sm font-medium text-gray-600">
                             No companies in this list yet.
                           </p>
-                          <p className="text-xs text-gray-300 mt-1">
+                          <p className="text-xs text-gray-400 mt-1">
                             Add companies from their profile page.
                           </p>
                         </div>
                       ) : (
-                        <div className="space-y-0">
-                          {companiesInList.map((company) => (
+                        <div className="space-y-0 max-h-96 overflow-y-auto">
+                          {companiesInList.map((company, companyIndex) => (
                             <div
                               key={company.id}
-                              className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0 group"
+                              className={cn(
+                                "flex items-center gap-3 py-3 px-2 border-b border-gray-50 last:border-0 group hover:bg-blue-50 rounded-md transition-colors duration-200 animate-in fade-in",
+                                "slide-in-from-left-2"
+                              )}
+                              style={{ animationDelay: `${companyIndex * 30}ms` }}
                             >
                               {/* Logo */}
-                              <div className="w-7 h-7 rounded border border-gray-100 flex items-center justify-center shrink-0 bg-white overflow-hidden">
+                              <div className="w-8 h-8 rounded border border-gray-100 flex items-center justify-center shrink-0 bg-white overflow-hidden hover:border-blue-200 transition-colors duration-200">
                                 {imgErrors[company.id] ? (
                                   <Building2
-                                    size={12}
+                                    size={13}
                                     className="text-gray-300"
                                   />
                                 ) : (
@@ -238,12 +272,12 @@ export default function ListsPage() {
                               <div className="flex-1 min-w-0">
                                 <Link
                                   href={`/companies/${company.id}`}
-                                  className="text-sm font-medium text-gray-700 hover:text-blue-600 hover:underline"
+                                  className="text-sm font-medium text-gray-800 hover:text-blue-600 hover:underline transition-colors duration-200"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   {company.name}
                                 </Link>
-                                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                <div className="flex items-center gap-2 mt-1 flex-wrap">
                                   <Badge
                                     className={cn(
                                       "text-xs",
@@ -252,7 +286,7 @@ export default function ListsPage() {
                                   >
                                     {company.stage}
                                   </Badge>
-                                  <span className="text-xs text-gray-400">
+                                  <span className="text-xs text-gray-500">
                                     {company.sector}
                                   </span>
                                 </div>
@@ -262,9 +296,9 @@ export default function ListsPage() {
                               <div className="flex items-center gap-2 shrink-0">
                                 <div
                                   className={cn(
-                                    "text-xs font-bold px-2 py-0.5 rounded-full border",
+                                    "text-xs font-bold px-2.5 py-1 rounded-full border transition-colors duration-200",
                                     scoreColor(company.thesisScore),
-                                    "bg-white"
+                                    "bg-white group-hover:shadow-sm"
                                   )}
                                 >
                                   {company.thesisScore}
@@ -272,13 +306,14 @@ export default function ListsPage() {
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="w-6 h-6 text-gray-200 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  className="w-7 h-7 text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all duration-200"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     removeFromList(list.id, company.id);
                                   }}
+                                  title="Remove from list"
                                 >
-                                  <X size={10} />
+                                  <X size={12} />
                                 </Button>
                               </div>
                             </div>
