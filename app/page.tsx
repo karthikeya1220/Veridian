@@ -183,7 +183,7 @@ export default function HomePage() {
 
         .lp-btn-primary {
           background: var(--blue);
-          color: white;
+          color: black;
           padding: 12px 24px;
           border-radius: 8px;
           font-size: 0.9rem;
