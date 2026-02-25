@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  LayoutDashboard,
   Building2,
   ListFilter,
   Bookmark,
   TrendingUp,
+  Globe,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useStore } from "@/lib/store";
@@ -16,6 +18,7 @@ export function Sidebar() {
   const { lists, savedSearches } = useStore();
 
   const navItems = [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, badge: null },
     { href: "/companies", label: "Companies", icon: Building2, badge: null },
     { href: "/lists", label: "Lists", icon: ListFilter, badge: lists.length },
     {
@@ -81,7 +84,7 @@ export function Sidebar() {
 
       {/* Thesis Card */}
       <div className="mt-auto">
-        <div className="bg-blue-50 rounded-lg p-3 flex gap-2">
+        <div className="bg-blue-50 rounded-lg p-3 flex gap-2 mb-3">
           <TrendingUp size={14} className="shrink-0 text-blue-600 mt-0.5" />
           <div className="min-w-0">
             <p className="text-xs font-medium text-blue-900">Thesis Score</p>

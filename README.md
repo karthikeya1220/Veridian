@@ -25,7 +25,9 @@ A Harmonic-style venture capital discovery interface with live AI enrichment. Bu
 
 ## Features
 
-✅ Company discovery with search + 5 faceted filters  
+✅ Professional B2B SaaS landing page with hero, features, testimonials  
+✅ Analytics dashboard (/dashboard) with KPIs, charts, and activity timeline  
+✅ Company discovery with search + 6 faceted filters  
 ✅ Sortable, paginated company table (25 mock companies)  
 ✅ Company profiles with overview, signals, notes tabs  
 ✅ Live AI enrichment — scrapes real websites, extracts intelligence  
@@ -88,8 +90,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 meridian/
 ├── app/
 │   ├── layout.tsx              # Root layout with sidebar + global search
-│   ├── page.tsx                # Home page
+│   ├── page.tsx                # Landing page (redirect to /dashboard)
 │   ├── globals.css             # Global styles
+│   ├── dashboard/
+│   │   └── page.tsx            # Analytics dashboard with KPIs, charts, feeds
 │   ├── companies/
 │   │   ├── page.tsx            # Discovery page with filtering, sorting, pagination
 │   │   └── [id]/
@@ -113,7 +117,14 @@ meridian/
 │   ├── signals-tab.tsx         # Enrichment signals display
 │   ├── notes-tab.tsx           # User notes CRUD
 │   ├── enrich-panel.tsx        # AI enrichment UI (trigger, results, caching)
-│   └── save-search-dialog.tsx  # Save search dialog
+│   ├── save-search-dialog.tsx  # Save search dialog
+│   ├── kpi-cards.tsx           # Dashboard KPI cards (6 metrics)
+│   ├── sector-chart.tsx        # Sector breakdown donut chart
+│   ├── stage-chart.tsx         # Funding stage bar chart
+│   ├── top-companies.tsx       # Top 8 companies leaderboard
+│   ├── recent-enrichments.tsx  # Recent enrichments feed
+│   ├── activity-timeline.tsx   # Combined activity timeline
+│   └── lists-summary.tsx       # Watchlists summary widget
 ├── lib/
 │   ├── store.ts                # Zustand store (companies, filters, lists, notes)
 │   ├── types.ts                # TypeScript interfaces
@@ -127,6 +138,38 @@ meridian/
 ├── next.config.ts              # Next.js config
 └── package.json                # Dependencies
 ```
+
+## Dashboard Features
+
+The `/dashboard` page provides a comprehensive analytics view:
+
+### KPI Cards (6 Metrics)
+- **Total Companies** - Count with weekly change trend
+- **Avg Thesis Score** - Average across all companies (0-100)
+- **AI Enriched** - Count of enriched companies with remaining work items
+- **High Signal** - Companies with thesis score ≥ 80
+- **Watchlists** - Active lists count
+- **Notes Written** - Total notes across all companies
+
+### Data Visualizations
+- **Sector Breakdown** - Donut chart showing company distribution across 7 sectors (AI Infra, DevTools, FinTech, HealthTech, B2B SaaS, Climate, Security)
+- **Stage Distribution** - Bar chart showing funding stage breakdown (Pre-seed, Seed, Series A, Series B) with average thesis scores
+- **Top Companies** - Leaderboard of 8 highest-scoring companies with enrichment status and export
+- **Recent Enrichments** - 6-item feed showing latest enriched companies with metadata
+- **Activity Timeline** - Combined timeline showing enrichments, notes, lists, and saved searches
+- **Watchlists Summary** - Quick access to 5 most recent lists with export buttons
+
+## Landing Page (/home)
+
+Professional B2B SaaS marketing page featuring:
+- **Hero Section** - Value proposition with dual CTAs (Get Started, Demo)
+- **Trust Bar** - Social proof with fake VC firm names
+- **Product Preview** - Interactive browser mockup showing the app interface
+- **6 Feature Cards** - Highlights: Thesis Filters, AI Enrichment, Scoring, Signals, Lists, Security
+- **Metrics Bar** - Dark navy section with 4 key metrics (25,000+ companies, <8s enrichment, 94% accuracy, 10x faster)
+- **How It Works** - 4-step timeline explaining the workflow
+- **Testimonials** - 3 fictional quotes from fund professionals
+- **Final CTA** - Call-to-action with checklist (no credit card, <5 min setup)
 
 ## Design Decisions
 
